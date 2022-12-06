@@ -163,7 +163,7 @@ local UseItemsSector = ExtrasCategory:Sector("Auto Use Items")
 --// Misc
 local MiscCategory = FinityWindow:Category("Misc")
 local FeedBeesSector = MiscCategory:Sector("Feed Bees")
-local WindShrineSector = MiscCategory:Sector("Wind Shrine (Not Working)")
+local WindShrineSector = MiscCategory:Sector("Wind Shrine")
 local BlenderSector = MiscCategory:Sector("Blender")
 local AmuletSector = MiscCategory:Sector("Amulet")
 local InventorySector = MiscCategory:Sector("Inventory")
@@ -257,6 +257,8 @@ _G.MasksMode = "5B"
 _G.MaskForFarm = "Diamond Mask"
 _G.FeedingBee = false
 _G.DebugGlider = false
+_G.AutoWindShrineDonate = false
+_G.AutoWindShrineSpawnRewards = false
 
 local ConvertedPollenForMobs = 0
 local NeedConvertPollenForMobs = 0
@@ -2538,31 +2540,47 @@ FeedBeesSector:Cheat("Checkbox", "Feed", function(State)
     end
 end)
 
+local WindShrineItems = {}
+for Name, _ in pairs(game:GetService("ReplicatedStorage").Events.RetrievePlayerStats:InvokeServer().Eggs) do
+    table.insert(WindShrineItems, Name)
+end
+
+local WindShrineItem = "Treat"
+local WindShrineAmount = 1
 WindShrineSector:Cheat("Textbox", "Amount:", function(Value)
-	print("Amount changed:", Value)
+	WindShrineAmount = tonumber(Value) or 1
 end, {placeholder = "Example: 1"})
 
 WindShrineSector:Cheat("Dropdown", "Item:", function(Option)
-	
+	WindShrineItem = Option
 end, {
-	options = {
-        "Treat",
-        "Blueberry",
-        "Pineapple",
-        "Strawberry",
-        "Sunflower Seed",
-		"Moon Charm",
-		"Bitter Berry",
-		"Neon Berry"
-	}
+	options = WindShrineItems
 })
 
 WindShrineSector:Cheat("Checkbox", "Donate", function(State)
+    if _G.AutoWindShrineDonate then
+        _G.AutoWindShrineDonate = false
+        return
+    end
 
+    _G.AutoWindShrineDonate = true
+    while _G.AutoWindShrineDonate do
+        wait(0.1)
+        game:GetService("ReplicatedStorage").Events.WindShrineDonation:InvokeServer(WindShrineItem, WindShrineAmount)
+    end
 end)
 
-WindShrineSector:Cheat("Checkbox", "Refund", function(State)
+WindShrineSector:Cheat("Checkbox", "Spawn Rewards", function(State)
+    if _G.AutoWindShrineSpawnRewards then
+        _G.AutoWindShrineSpawnRewards = false
+        return
+    end
 
+    _G.AutoWindShrineSpawnRewards = true
+    while _G.AutoWindShrineSpawnRewards do
+        wait(0.1)
+        game:GetService("ReplicatedStorage").Events.WindShrineTrigger:FireServer()
+    end
 end)
 
 local BlenderItem = "RedExtract"
@@ -3144,4 +3162,4 @@ for Id = 1, 6 do
     game:GetService("ReplicatedStorage").Events.ClaimHive:FireServer(ClaimId)
 end
 
-print("Loading Done")
+print("Retarded Completed!")

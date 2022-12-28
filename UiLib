@@ -14,7 +14,7 @@
 		April 21th, 2020
 	Author: 
 		detourious @ v3rmillion.netf
-	Fork:
+	Additional Functions:
 		⛄• Ice Girl#2212
 					
 --]]
@@ -677,10 +677,11 @@ function finity.new(isdark, gprojectName, thinProject)
 								finity.gs["TweenService"]:Create(cheat.checkboxbutton, TweenInfo.new(0.2), {ImageColor3 = theme.checkbox_checked}):Play()
 							end
 						end)
-						cheat.checkboxbutton.MouseButton1Up:Connect(function()
+						
+						function cheat:Change(WithoutFunction)
 							cheat.value = not cheat.value
 
-							if callback then
+							if callback and not WithoutFunction then
 								local s, e = pcall(function()
 									callback(cheat.value)
 								end)
@@ -690,10 +691,15 @@ function finity.new(isdark, gprojectName, thinProject)
 
 							if cheat.value then
 								finity.gs["TweenService"]:Create(cheat.outerbox, TweenInfo.new(0.2), {ImageColor3 = theme.checkbox_checked}):Play()
+								finity.gs["TweenService"]:Create(cheat.checkboxbutton, TweenInfo.new(0.2), {ImageColor3 = theme.checkbox_checked}):Play()
 							else
 								finity.gs["TweenService"]:Create(cheat.outerbox, TweenInfo.new(0.2), {ImageColor3 = theme.checkbox_outer}):Play()
 								finity.gs["TweenService"]:Create(cheat.checkboxbutton, TweenInfo.new(0.2), {ImageColor3 = theme.checkbox_inner}):Play()
 							end
+						end
+						
+						cheat.checkboxbutton.MouseButton1Up:Connect(function()
+							cheat:Change()
 						end)
 
 						cheat.checkboxbutton.Parent = cheat.outerbox
@@ -1008,7 +1014,7 @@ function finity.new(isdark, gprojectName, thinProject)
 							refreshOptions()
 						end
 
-						function cheat:SetValue(value)
+						function cheat:SetValue(value, WithoutFunction)
 							cheat.selected.Text = value
 							cheat.value = value
 
@@ -1016,7 +1022,7 @@ function finity.new(isdark, gprojectName, thinProject)
 								cheat.fadelist()
 							end
 
-							if callback then
+							if callback and not WithoutFunction then
 								local s, e = pcall(function()
 									callback(cheat.value)
 								end)
@@ -1088,9 +1094,17 @@ function finity.new(isdark, gprojectName, thinProject)
 								if not s then warn("error: "..e) end
 							end
 						end)
-						function cheat:SetValue(value)
+						function cheat:SetValue(value, WithoutFunction)
 							cheat.value = tostring(value)
-							cheat.textbox.Text = tostring(val)
+							cheat.textbox.Text = tostring(value)
+							
+							if callback and not WithoutFunction then
+								local s, e = pcall(function()
+									callback(cheat.value)
+								end)
+
+								if not s then warn("error: "..e) end
+							end
 						end
 
 						cheat.background.Parent = cheat.container
@@ -1172,8 +1186,8 @@ function finity.new(isdark, gprojectName, thinProject)
 						function cheat:SetValue(value)
 							local size = math.clamp(value - cheat.sliderbar.AbsolutePosition.X, 0, 150)
 							local percent = size / 150
-							local perc = default/maximum
-							cheat.value = math.floor((minimum + (maximum - minimum) * percent) * 100) / 100
+							local perc = value/maximum
+							cheat.value = value --math.floor((minimum + (maximum - minimum) * percent) * 100) / 100
 							finity.gs["TweenService"]:Create(cheat.visiframe, TweenInfo.new(0.1), {
 								Size = UDim2.new(perc, 0, 1, 0),
 							}):Play()

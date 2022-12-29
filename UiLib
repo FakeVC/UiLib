@@ -286,8 +286,8 @@ function finity.new(isdark, gprojectName, thinProject)
 		Size = UDim2.new(1, -40, 0, 30),
 		Position = UDim2.new(0, 40, 0, 0),
 		Text = "Press '".. string.sub(tostring(self.ToggleKey), 14) .."' to hide this menu",
-		Font = Enum.Font.GothamSemibold,
-		TextSize = 13,
+		Font = Enum.Font.GothamBold,
+		TextSize = 16,
 		TextXAlignment = Enum.TextXAlignment.Left,
 		BackgroundTransparency = 1,
 		TextColor3 = theme.text_color,
@@ -482,9 +482,13 @@ function finity.new(isdark, gprojectName, thinProject)
 			end
 			for BoxName, Box in pairs(AdditionalsBoxes) do
 				if BoxName == string.lower(name) then
-					Box:TweenPosition(UDim2.new(1.4, 0, 0, 0), "Out", "Quint", .9, true)
+					Box.UI:TweenPosition(UDim2.new(1.4, 0, 0, 0), "Out", "Quint", .9, true)
+					Box.Opened = true
 				else
-					Box:TweenPosition(UDim2.new(0.6, 0, 0, 0), "In", "Quint", .6, true)
+					if Box.Opened then
+						Box.UI:TweenPosition(UDim2.new(0.6, 0, 0, 0), "In", "Quint", .6, true)
+						Box.Opened = false
+					end
 				end
 			end
 
@@ -538,7 +542,7 @@ function finity.new(isdark, gprojectName, thinProject)
 				Name = "Container",
 				BackgroundColor3 = Color3.new(1, 1, 1),
 				BackgroundTransparency = 1,
-				Position = UDim2.new(0, 0, 0, 22),
+				Position = UDim2.new(0, 0, 0, 40),
 				Size = UDim2.new(1, -5, 1, -30),
 				ZIndex = 2
 			})
@@ -548,13 +552,26 @@ function finity.new(isdark, gprojectName, thinProject)
 				Text = name,
 				BackgroundColor3 = Color3.new(1, 1, 1),
 				BackgroundTransparency = 1,
+				Position = UDim2.new(0, 0, 0, 3),
 				Size = UDim2.new(1, -5, 0, 25),
 				ZIndex = 2,
-				Font = Enum.Font.GothamSemibold,
-				TextColor3 = theme.text_color,
-				TextSize = 14,
+				Font = Enum.Font.GothamBold,
+				TextColor3 = Color3.fromRGB(76, 128, 206),
+				TextSize = 20,
 				TextXAlignment = Enum.TextXAlignment.Left,
 			})
+			sector.title.RichText = true
+			
+			local separator = finity:Create("Frame", {
+				Name = "Separator",
+				BackgroundColor3 = theme.separator_color,
+				BorderSizePixel = 0,
+				Position = UDim2.new(0, 0, 0, 30),
+				Size = UDim2.new(1, 0, 0, 1),
+				ZIndex = 6,
+			})
+			separator.Parent = sector.title
+			separator = nil
 
 			local uilistlayout = finity:Create("UIListLayout", {
 				SortOrder = Enum.SortOrder.LayoutOrder
@@ -1560,7 +1577,7 @@ function finity.new(isdark, gprojectName, thinProject)
 			additional_box.AnchorPoint = Vector2.new(1, 0)
 			additional_box.BackgroundColor3 = Color3.new(0.12549, 0.12549, 0.129412)
 			additional_box.BorderSizePixel = 0
-			additional_box.Position = UDim2.new(1.4, 0, 0, 0)
+			additional_box.Position = UDim2.new(0.6, 0, 0, 0)
 			additional_box.Size = UDim2.new(0, 305, 0, 90)
 			additional_box.Visible = true
 			additional_box.ZIndex = -2
@@ -1620,9 +1637,9 @@ function finity.new(isdark, gprojectName, thinProject)
 			topbar.Parent = additional_box
 
 			local topbartip = Instance.new("TextLabel")
-			topbartip.Font = Enum.Font.GothamMedium
+			topbartip.Font = Enum.Font.GothamBold
 			topbartip.Text = AdditionalBox
-			topbartip.TextColor3 = Color3.new(0.807843, 0.807843, 0.807843)
+			topbartip.TextColor3 = Color3.fromRGB(115, 162, 238)
 			topbartip.TextSize = 13
 			topbartip.TextXAlignment = Enum.TextXAlignment.Left
 			topbartip.BackgroundTransparency = 1
@@ -1632,6 +1649,7 @@ function finity.new(isdark, gprojectName, thinProject)
 			topbartip.ZIndex = -1
 			topbartip.Name = "TopbarTip"
 			topbartip.Parent = topbar
+			topbartip.RichText = true
 
 			local shadow = Instance.new("ImageLabel")
 			shadow.Image = "rbxassetid://1316045217"
@@ -1658,7 +1676,7 @@ function finity.new(isdark, gprojectName, thinProject)
 				frame.Parent = info
 
 				local title = Instance.new("TextLabel")
-				title.Font = Enum.Font.GothamMedium
+				title.Font = Enum.Font.GothamBold
 				title.Text = Text or "Something Broke"
 				title.TextColor3 = Color3.new(0.807843, 0.807843, 0.807843)
 				title.TextSize = 14
@@ -1690,14 +1708,18 @@ function finity.new(isdark, gprojectName, thinProject)
 				return false
 			end
 			
-			AdditionalsBoxes[string.lower(name)] = additional_box
+			AdditionalsBoxes[string.lower(name)] = {UI = additional_box, Opened = false}
 		end
 		
 		for BoxName, Box in pairs(AdditionalsBoxes) do
-			if BoxName == string.lower("Info") then
-				Box:TweenPosition(UDim2.new(1.4, 0, 0, 0), "Out", "Quint", .9, true)
+			if BoxName == string.lower(name) then
+				Box.UI:TweenPosition(UDim2.new(1.4, 0, 0, 0), "Out", "Quint", .9, true)
+				Box.Opened = true
 			else
-				Box:TweenPosition(UDim2.new(0.6, 0, 0, 0), "In", "Quint", .6, true)
+				if Box.Opened then
+					Box.UI:TweenPosition(UDim2.new(0.6, 0, 0, 0), "In", "Quint", .6, true)
+					Box.Opened = false
+				end
 			end
 		end
 		
@@ -1720,7 +1742,9 @@ function finity.new(isdark, gprojectName, thinProject)
 	self2.topbar.Parent = self2.container
 	self2.tip.Parent = self2.topbar
 	self2.icon.Parent = self2.topbar
-
+	
+	self2.tip.RichText = true
+	
 	return self2, finityData
 end
 

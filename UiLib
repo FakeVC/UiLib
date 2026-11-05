@@ -1669,66 +1669,47 @@ function finity.new(isdark, gprojectName, thinProject)
 			shadow.Parent = additional_box
 			shadow.ZIndex = -2
 			
-			function category:AdditionalLabel(Name, Text)
-				local frame = Instance.new("Frame")
-				frame.BackgroundColor3 = Color3.new(1, 1, 1)
-				frame.BackgroundTransparency = 1
-				frame.Size = UDim2.new(1, 0, 0, 25)
-				frame.Visible = true
-				frame.ZIndex = -2
-				frame.Name = Name or "Something Broke"
-				frame.Parent = info
-
-				local title = Instance.new("TextLabel")
-				title.Font = Enum.Font.GothamSemibold
-				title.Text = Text or "Something Broke"
-				title.TextColor3 = Color3.new(0.807843, 0.807843, 0.807843)
-				title.TextSize = 14
-				title.TextXAlignment = Enum.TextXAlignment.Left
-				title.BackgroundColor3 = Color3.new(1, 1, 1)
-				title.BackgroundTransparency = 1
-				title.Size = UDim2.new(1, -5, 0, 25)
-				title.Visible = true
-				title.ZIndex = -1
-				title.Name = "Title"
-				title.Parent = frame
-				title.RichText = true
-
-				additional_box.Size = UDim2.new(0, 305, 0, 40 + uilist_layout.AbsoluteContentSize.Y)
-				
-				category.AdditionalLabels[string.lower(Name)] = title
-			end
 			
-			function category:ChangeAdditional(Name, Key, Value)
-				local Title = category.AdditionalLabels[string.lower(Name)]
-				if Title then
-					if string.lower(Key) == "color" then
-						Title.TextColor3 = Value
-					elseif string.lower(Key) == "text" then
-						Title.Text = Value
-					end
-					return true
-				end
-				return false
-			end
-			
-			AdditionalsBoxes[string.lower(name)] = {UI = additional_box, Opened = false}
-		end
-		
-		for BoxName, Box in pairs(AdditionalsBoxes) do
-			if BoxName == string.lower(name) then
-				Box.UI:TweenPosition(UDim2.new(1.4, 0, 0, 0), "Out", "Quint", .9, true)
-				Box.Opened = true
-			else
-				if Box.Opened then
-					Box.UI:TweenPosition(UDim2.new(0.6, 0, 0, 0), "In", "Quint", .6, true)
-					Box.Opened = false
-				end
-			end
-		end
-		
-		return category
-	end
+function category:AdditionalLabel(Name, Text)
+    local frame = Instance.new("Frame")
+    frame.Name = Name or "Info"
+    frame.BackgroundTransparency = 1
+    frame.Size = UDim2.new(1, 0, 0, 25)
+    frame.AutomaticSize = Enum.AutomaticSize.Y
+    frame.Parent = info
+
+    local title = Instance.new("TextLabel")
+    title.Name = "Title"
+    title.BackgroundTransparency = 1
+    title.Font = Enum.Font.GothamSemibold
+    title.Text = Text or "Something Broke"
+    title.TextColor3 = Color3.fromRGB(206, 206, 206)
+    title.TextSize = 14
+    title.TextXAlignment = Enum.TextXAlignment.Left
+    title.TextYAlignment = Enum.TextYAlignment.Top
+    title.TextWrapped = true
+    title.AutomaticSize = Enum.AutomaticSize.Y
+    title.Size = UDim2.new(1, -5, 0, 0)
+    title.RichText = true
+    title.Parent = frame
+
+    category.AdditionalLabels[string.lower(Name or "Info")] = title
+
+    task.defer(function()
+        task.wait()
+        info.CanvasSize = UDim2.new(
+            0, 0, 0,
+            uilist_layout.AbsoluteContentSize.Y + 5
+        )
+
+        additional_box.Size = UDim2.new(
+            0, 305, 0, 40 + uilist_layout.AbsoluteContentSize.Y
+        )
+    end)
+
+    return title
+end
+
 
 	self:addShadow(self2.container, 0)
 
